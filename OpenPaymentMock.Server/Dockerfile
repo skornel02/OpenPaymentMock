@@ -27,7 +27,13 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./OpenPaymentMock.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+
+USER root
+RUN apt-get update -yq && apt-get upgrade -yq && apt-get install -yq wget curl
+USER 1001
+
 WORKDIR /app
+
 COPY --from=publish /app/publish .
 COPY --from=node /src/OpenPaymentMock.Frontend/dist ./wwwroot
 ENTRYPOINT ["dotnet", "OpenPaymentMock.Server.dll"]
