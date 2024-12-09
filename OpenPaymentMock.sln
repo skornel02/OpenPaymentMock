@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPaymentMock.Server", "O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPaymentMock.Communication", "OpenPaymentMock.Communication\OpenPaymentMock.Communication.csproj", "{30FBAEB2-1BD3-4C13-A216-E11A4426B73C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPaymentMock.Model", "OpenPaymentMock.Model\OpenPaymentMock.Model.csproj", "{0F942A4D-FE64-4581-ABB2-F6094A16C9BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{30FBAEB2-1BD3-4C13-A216-E11A4426B73C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30FBAEB2-1BD3-4C13-A216-E11A4426B73C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30FBAEB2-1BD3-4C13-A216-E11A4426B73C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F942A4D-FE64-4581-ABB2-F6094A16C9BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F942A4D-FE64-4581-ABB2-F6094A16C9BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F942A4D-FE64-4581-ABB2-F6094A16C9BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F942A4D-FE64-4581-ABB2-F6094A16C9BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

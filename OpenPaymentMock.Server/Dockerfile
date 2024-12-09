@@ -10,7 +10,7 @@ FROM node:20-slim AS node
 WORKDIR /src
 COPY ./OpenPaymentMock.Frontend /src/OpenPaymentMock.Frontend
 WORKDIR /src/OpenPaymentMock.Frontend
-RUN npm ci
+RUN npm i
 RUN npm run build
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
