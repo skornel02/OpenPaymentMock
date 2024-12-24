@@ -2,6 +2,11 @@
 public enum PaymentAttemptStatus
 {
     /// <summary>
+    /// No payment attempt exists.
+    /// </summary>
+    NotAttempted,
+
+    /// <summary>
     /// The payment attempt has been started.
     /// </summary>
     Started,
