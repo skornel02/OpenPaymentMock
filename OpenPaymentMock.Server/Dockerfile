@@ -29,7 +29,7 @@ RUN dotnet publish "./OpenPaymentMock.Server.csproj" -c $BUILD_CONFIGURATION -o 
 FROM base AS final
 
 USER root
-RUN apt-get update -yq && apt-get upgrade -yq && apt-get install -yq wget curl
+RUN apt-get update -yq && apt-get upgrade -yq && apt-get install -yq wget curl && mkdir /app/db && chmod 777 /app/db -R
 USER 1001
 
 WORKDIR /app
