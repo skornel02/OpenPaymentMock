@@ -20,7 +20,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -29,12 +29,14 @@ export interface paths {
                         "application/json": components["schemas"]["PartnerShortDto"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
+                /** @description Unauthorized */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
             };
         };
@@ -68,6 +70,651 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/partners/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PartnerShortDto"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Warning! This deletes the partner permanently. This can only happen if there are no payments for this partner. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/partners/{id}/access-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PartnerAccessKeyDetailsDto"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PartnerAccessKeyCreationDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PartnerAccessKeyDetailsWithSecretDto"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/partners/{id}/access-keys/{accessKeyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Marks the access key as deleted. Can no longer be used permanently. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    accessKeyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    partnerId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentSituationDetailsDto"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query: {
+                    partnerId: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PaymentSituationCreationDto"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentSituationDetailsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentSituationDetailsDto"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/attempts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/current-attempt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/attempts/{attemptId}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                    attemptId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/attempts/{attemptId}/paid-successfully": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                    attemptId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/attempts/{attemptId}/payment-cancelled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                    attemptId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         delete?: never;
@@ -80,13 +727,109 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        PartnerAccessKeyCreationDto: {
+            name?: string;
+            /** Format: date-time */
+            expiresAt?: string | null;
+        };
+        PartnerAccessKeyDetailsDto: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            lastUsed?: string | null;
+            deleted?: boolean;
+            /** Format: int64 */
+            usageCount?: number;
+            partnerName?: string;
+            /** Format: uuid */
+            partnerId?: string;
+        };
+        PartnerAccessKeyDetailsWithSecretDto: {
+            /** Format: uuid */
+            id?: string;
+            key?: string;
+            name?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            expiresAt?: string | null;
+            /** Format: date-time */
+            lastUsed?: string | null;
+            deleted?: boolean;
+            /** Format: int64 */
+            usageCount?: number;
+            partnerName?: string;
+            /** Format: uuid */
+            partnerId?: string;
+        };
         PartnerCreationDto: {
-            name?: string | null;
+            name?: string;
         };
         PartnerShortDto: {
             /** Format: uuid */
             id?: string;
-            name?: string | null;
+            name?: string;
+        };
+        PaymentAttemptDetailsDto: {
+            /** Format: uuid */
+            id?: string;
+            status?: components["schemas"]["PaymentAttemptStatus"];
+            paymentError?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            finishedAt?: string | null;
+            /** Format: uuid */
+            paymentSituationId?: string;
+        };
+        /** @enum {string} */
+        PaymentAttemptStatus: "NotAttempted" | "Started" | "Succeeded" | "TimedOut" | "BankVerificationRequired" | "PaymentError";
+        PaymentOptions: {
+            allowInvalidCards?: boolean;
+        };
+        PaymentSituationCreationDto: {
+            /** Format: double */
+            amount?: number;
+            currency?: string;
+            callbackUrl?: string;
+            /** @example 00:00:00 */
+            timeout?: string;
+            paymentOptions?: components["schemas"]["PaymentOptions"];
+        };
+        PaymentSituationDetailsDto: {
+            /** Format: uuid */
+            id?: string;
+            status?: components["schemas"]["PaymentSituationStatus"];
+            /** Format: double */
+            amount?: number;
+            currency?: string;
+            callbackUrl?: string;
+            /** @example 00:00:00 */
+            timeout?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            finishedAt?: string | null;
+            paymentOptions?: components["schemas"]["PaymentOptions"];
+            /** Format: uuid */
+            partnerId?: string;
+        };
+        /** @enum {string} */
+        PaymentSituationStatus: "Created" | "Processing" | "Succeeded" | "Failed" | "Cancelled" | "Refunded";
+        ProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+        } & {
+            [key: string]: unknown;
         };
     };
     responses: never;
@@ -95,7 +838,17 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaPartnerAccessKeyCreationDto = components['schemas']['PartnerAccessKeyCreationDto'];
+export type SchemaPartnerAccessKeyDetailsDto = components['schemas']['PartnerAccessKeyDetailsDto'];
+export type SchemaPartnerAccessKeyDetailsWithSecretDto = components['schemas']['PartnerAccessKeyDetailsWithSecretDto'];
 export type SchemaPartnerCreationDto = components['schemas']['PartnerCreationDto'];
 export type SchemaPartnerShortDto = components['schemas']['PartnerShortDto'];
+export type SchemaPaymentAttemptDetailsDto = components['schemas']['PaymentAttemptDetailsDto'];
+export type SchemaPaymentAttemptStatus = components['schemas']['PaymentAttemptStatus'];
+export type SchemaPaymentOptions = components['schemas']['PaymentOptions'];
+export type SchemaPaymentSituationCreationDto = components['schemas']['PaymentSituationCreationDto'];
+export type SchemaPaymentSituationDetailsDto = components['schemas']['PaymentSituationDetailsDto'];
+export type SchemaPaymentSituationStatus = components['schemas']['PaymentSituationStatus'];
+export type SchemaProblemDetails = components['schemas']['ProblemDetails'];
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
