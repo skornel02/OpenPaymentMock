@@ -10,6 +10,8 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<PartnerEntity> Partners { get; set; } = null!;
+
+    public DbSet<PartnerAccessKeyEntity> PartnerAccessKeys { get; set; } = null!;
     public DbSet<PaymentAttemptEntity> PaymentAttempts { get; set; } = null!;
     public DbSet<PaymentSituationEntity> PaymentSituations { get; set; } = null!;
 

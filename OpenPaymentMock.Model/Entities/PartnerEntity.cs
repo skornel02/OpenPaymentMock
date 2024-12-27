@@ -7,4 +7,6 @@ public class PartnerEntity
     public required string Name { get; set; }
 
     public List<PaymentSituationEntity> PaymentSituations { get; set; } = null!;
+
+    public List<PartnerAccessKeyEntity> AccessKeys { get; set; } = null!;
 }

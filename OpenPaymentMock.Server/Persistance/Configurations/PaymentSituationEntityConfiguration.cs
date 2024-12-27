@@ -12,5 +12,10 @@ public class PaymentSituationEntityConfiguration : IEntityTypeConfiguration<Paym
             .WithMany(_ => _.PaymentSituations)
             .HasForeignKey(_ => _.PartnerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.OwnsOne(_ => _.PaymentOptions, _ =>
+        {
+            _.ToJson();
+        });
     }
 }

@@ -6,4 +6,6 @@ public enum PaymentSituationStatus
     Processing,
     Succeeded,
     Failed,
+    Cancelled,
+    Refunded,
 }

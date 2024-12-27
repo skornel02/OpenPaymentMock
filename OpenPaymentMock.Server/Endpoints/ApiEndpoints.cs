@@ -9,5 +9,6 @@ public static class ApiEndpoints
 
         api.MapPartnerEndpoints();
         api.MapPaymentEndpoints();
+        api.MapPaymentAttemptEndpoints();
     }
 }

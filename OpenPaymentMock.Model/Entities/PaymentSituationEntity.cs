@@ -1,4 +1,5 @@
 ﻿using OpenPaymentMock.Model.Enums;
+using OpenPaymentMock.Model.Options;
 
 namespace OpenPaymentMock.Model.Entities;
 
@@ -6,7 +7,7 @@ public class PaymentSituationEntity
 {
     public required Guid Id { get; set; }
 
-    public required PaymentSituationStatus Status { get; set; } = PaymentSituationStatus.Created; 
+    public required PaymentSituationStatus Status { get; set; } = PaymentSituationStatus.Created;
 
     public required decimal Amount { get; set; }
 
@@ -19,6 +20,8 @@ public class PaymentSituationEntity
     public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? FinishedAt { get; set; }
+
+    public PaymentOptions PaymentOptions { get; set; } = new();
 
     public required Guid PartnerId { get; set; }
 

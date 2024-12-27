@@ -1,8 +1,11 @@
-﻿namespace OpenPaymentMock.Communication.Payment;
+﻿using OpenPaymentMock.Model.Options;
+
+namespace OpenPaymentMock.Communication.Payment;
 
 public record PaymentSituationCreationDto(
-    decimal Amount, 
+    decimal Amount,
     string Currency,
     string CallbackUrl,
-    TimeSpan Timeout
+    TimeSpan Timeout,
+    PaymentOptions? PaymentOptions
 );
