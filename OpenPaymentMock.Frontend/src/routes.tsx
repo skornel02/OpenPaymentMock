@@ -1,9 +1,7 @@
 import {RouteObject} from "react-router-dom";
 import IndexPage from "@/pages";
-import AdminIndexPage from "./pages/admin/admin-index";
 import AdminLayout from "@/layouts/admin-layout";
-import PartnersPage from "./pages/admin/partners/partners";
-import PaymentsPage from "./pages/admin/payments/payments";
+import PaymentPage from "./pages/payment/payment";
 
 export const routes: RouteObject[] = [
     {
@@ -17,19 +15,30 @@ export const routes: RouteObject[] = [
         children: [
             {
                 path: "/admin",
-                element: <AdminIndexPage/>,
+                // element: <AdminIndexPage/>,
+                lazy: async () => {
+                    const AdminIndexPage = (await import('./pages/admin/admin-index')).default;
+                    return {Component: AdminIndexPage}
+                }
             },
             {
                 path: "/admin/partners",
-                element: <PartnersPage />
+                lazy: async () => {
+                    const PartnersPage = (await import('./pages/admin/partners/partners')).default;
+                    return {Component: PartnersPage}
+                }
             },
             {
                 path: "/admin/payments",
-                element: <PaymentsPage />
+                lazy: async () => {
+                    const PaymentsPage = (await import('./pages/admin/payments/payments')).default;
+                    return {Component: PaymentsPage}
+                }
             }
         ]
     },
     {
         path: "/payments/:paymentId",
+        element: <PaymentPage />
     }
 ]

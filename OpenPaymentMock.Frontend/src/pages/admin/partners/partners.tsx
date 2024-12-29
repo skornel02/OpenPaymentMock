@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
     MantineReactTable,
     MRT_Row,
@@ -7,48 +7,21 @@ import {
     type MRT_ColumnDef,
 } from 'mantine-react-table';
 import { SchemaPartnerShortDto } from "@/lib/openpaymentmock-backend";
-import { client } from "@/lib/openpaymentmock-client";
+import { client, useBackendQuery } from "@/lib/openpaymentmock-client";
 import { useAuthentication } from "@/contexts/authentication-context";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
-import { Edit, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
+import PartnerKeys from "./components/partner-keys";
 
 export default function PartnersPage() {
     const { apiKey } = useAuthentication();
 
-    const [data, setData] = useState<SchemaPartnerShortDto[]>([]);
-    const [isError, setIsError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isRefetching, setIsRefetching] = useState(false);
-
-    const [validationErrors, setValidationErrors] = useState<
-        Record<string, string | undefined>
-    >({});
-
-    const fetchData = useCallback(async () => {
-        try {
-            const { data } = await client.GET("/api/partners", {
-                headers: {
-                    "X-Api-Key": apiKey
-                }
-            });
-
-            if (data) {
-                setData(data);
-            }
-        } catch (error) {
-            console.error(error);
-            setIsError(true);
+    const {data, isLoading, isValidating, error, mutate} = useBackendQuery('/api/partners', {
+        headers: {
+            "X-Api-Key": apiKey
         }
-
-        setIsLoading(false);
-        setIsRefetching(false);
-    }, [apiKey]);
-
-    useEffect(() => {
-        setIsLoading(true);
-        fetchData();
-    }, [fetchData]);
+    })
 
     const columns = useMemo<MRT_ColumnDef<SchemaPartnerShortDto>[]>(() => {
         const columns: MRT_ColumnDef<SchemaPartnerShortDto>[] = [
@@ -63,18 +36,12 @@ export default function PartnersPage() {
                 mantineEditTextInputProps: {
                     type: 'text',
                     required: true,
-                    error: validationErrors?.name,
-                    onFocus: () =>
-                        setValidationErrors({
-                            ...validationErrors,
-                            name: undefined,
-                        }),
                 },
             },
         ];
 
         return columns;
-    }, [validationErrors]);
+    }, []);
 
     //CREATE action
     const handleCreateUser: MRT_TableOptions<SchemaPartnerShortDto>['onCreatingRowSave'] = async ({
@@ -94,12 +61,9 @@ export default function PartnersPage() {
             });
 
             exitCreatingMode();
-            fetchData();
+            mutate();
         } catch (error) {
             console.error(error);
-            setValidationErrors({
-                name: 'Error creating user',
-            });
         }
     };
 
@@ -116,21 +80,21 @@ export default function PartnersPage() {
                 }
             });
 
-            fetchData();
+            mutate();
         }
     }
 
     const table = useMantineReactTable({
         columns,
-        data,
+        data: data ?? [],
         getRowId: (row) => row.id,
         enableEditing: true,
         state: {
             isLoading,
-            showProgressBars: isRefetching,
-            showAlertBanner: isError,
+            showProgressBars: isValidating,
+            showAlertBanner: error !== undefined,
         },
-        mantineToolbarAlertBannerProps: isError
+        mantineToolbarAlertBannerProps: error
             ? { color: 'red', children: 'Error loading data' }
             : undefined,
         createDisplayMode: 'row',
@@ -148,13 +112,13 @@ export default function PartnersPage() {
                 <Button
                     variant="secondary"
                     onClick={() => {
-                        setIsRefetching(true);
-                        fetchData();
+                        mutate();
                     }}>
                     Refresh data
                 </Button>
             </div>
         ),
+        positionActionsColumn: 'last',
         renderRowActions: ({ row, table }) => (
             <div className="flex flex-row gap-2">
                 {/* <TooltipProvider>
@@ -175,12 +139,11 @@ export default function PartnersPage() {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger>
-
-                            <Button
+                            <Button className="border-red-500"
                                 variant="outline"
                                 onClick={() => openDeleteConfirmModal(row)}
                             >
-                                <Trash />
+                                <Trash className="text-red-600" />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -190,9 +153,12 @@ export default function PartnersPage() {
                 </TooltipProvider>
             </div>
         ),
-        onCreatingRowCancel: () => setValidationErrors({}),
         onCreatingRowSave: handleCreateUser,
-        onEditingRowCancel: () => setValidationErrors({}),
+        renderDetailPanel: ({ row }) => {
+            return <>
+                <PartnerKeys partner={row.original}/>
+            </>;
+        },
     });
 
     return <MantineReactTable table={table} />;

@@ -14,14 +14,13 @@ import {
 } from '@/components/ui/sidebar';
 import { Link, Outlet, useMatches } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { CreditCard, Home, Users } from 'lucide-react';
+import { ChevronsLeftRightEllipsis, CreditCard, Home, Users } from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb.tsx';
-import { Toaster } from '@/components/ui/toaster.tsx';
 import { AuthenticationProvider } from '@/contexts/authentication-context';
 
 export default function AdminLayout() {
@@ -64,6 +63,14 @@ export default function AdminLayout() {
                       <Link to="/admin">
                         <Home />
                         Admin
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link to="/swagger/index.html" reloadDocument>
+                        <ChevronsLeftRightEllipsis />
+                        Swagger
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -133,7 +140,6 @@ export default function AdminLayout() {
             </div>
           )}
         </main>
-        <Toaster />
       </SidebarProvider>
     </AuthenticationProvider>
   );

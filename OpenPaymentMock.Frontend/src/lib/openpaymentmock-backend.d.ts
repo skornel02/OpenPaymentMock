@@ -548,14 +548,18 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
                 };
             };
         };
@@ -597,20 +601,6 @@ export interface paths {
                         "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         delete?: never;
@@ -648,20 +638,6 @@ export interface paths {
                     content: {
                         "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
             };
         };
@@ -701,20 +677,6 @@ export interface paths {
                         "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         delete?: never;
@@ -728,106 +690,106 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         PartnerAccessKeyCreationDto: {
-            name?: string;
+            name: string;
             /** Format: date-time */
-            expiresAt?: string | null;
+            expiresAt: string | null;
         };
         PartnerAccessKeyDetailsDto: {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            name: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            expiresAt?: string | null;
+            expiresAt: string | null;
             /** Format: date-time */
-            lastUsed?: string | null;
-            deleted?: boolean;
+            lastUsed: string | null;
+            deleted: boolean;
             /** Format: int64 */
-            usageCount?: number;
-            partnerName?: string;
+            usageCount: number;
+            partnerName: string;
             /** Format: uuid */
-            partnerId?: string;
+            partnerId: string;
         };
         PartnerAccessKeyDetailsWithSecretDto: {
             /** Format: uuid */
-            id?: string;
-            key?: string;
-            name?: string;
+            id: string;
+            key: string;
+            name: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            expiresAt?: string | null;
+            expiresAt: string | null;
             /** Format: date-time */
-            lastUsed?: string | null;
-            deleted?: boolean;
+            lastUsed: string | null;
+            deleted: boolean;
             /** Format: int64 */
-            usageCount?: number;
-            partnerName?: string;
+            usageCount: number;
+            partnerName: string;
             /** Format: uuid */
-            partnerId?: string;
+            partnerId: string;
         };
         PartnerCreationDto: {
-            name?: string;
+            name: string;
         };
         PartnerShortDto: {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            name: string;
         };
         PaymentAttemptDetailsDto: {
             /** Format: uuid */
-            id?: string;
-            status?: components["schemas"]["PaymentAttemptStatus"];
-            paymentError?: string | null;
+            id: string;
+            status: components["schemas"]["PaymentAttemptStatus"];
+            paymentError: string | null;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            finishedAt?: string | null;
+            finishedAt: string | null;
             /** Format: uuid */
-            paymentSituationId?: string;
+            paymentSituationId: string;
         };
         /** @enum {string} */
         PaymentAttemptStatus: "NotAttempted" | "Started" | "Succeeded" | "TimedOut" | "BankVerificationRequired" | "PaymentError";
         PaymentOptions: {
-            allowInvalidCards?: boolean;
+            allowInvalidCards: boolean;
         };
         PaymentSituationCreationDto: {
             /** Format: double */
-            amount?: number;
-            currency?: string;
-            callbackUrl?: string;
+            amount: number;
+            currency: string;
+            callbackUrl: string;
             /** @example 00:00:00 */
-            timeout?: string;
-            paymentOptions?: components["schemas"]["PaymentOptions"];
+            timeout: string;
+            paymentOptions: components["schemas"]["PaymentOptions"];
         };
         PaymentSituationDetailsDto: {
             /** Format: uuid */
-            id?: string;
-            status?: components["schemas"]["PaymentSituationStatus"];
+            id: string;
+            status: components["schemas"]["PaymentSituationStatus"];
             /** Format: double */
-            amount?: number;
-            currency?: string;
-            callbackUrl?: string;
+            amount: number;
+            currency: string;
+            callbackUrl: string;
             /** @example 00:00:00 */
-            timeout?: string;
+            timeout: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            finishedAt?: string | null;
-            paymentOptions?: components["schemas"]["PaymentOptions"];
+            finishedAt: string | null;
+            paymentOptions: components["schemas"]["PaymentOptions"];
             /** Format: uuid */
-            partnerId?: string;
+            partnerId: string;
         };
         /** @enum {string} */
         PaymentSituationStatus: "Created" | "Processing" | "Succeeded" | "Failed" | "Cancelled" | "Refunded";
         ProblemDetails: {
-            type?: string | null;
-            title?: string | null;
+            type: string | null;
+            title: string | null;
             /** Format: int32 */
-            status?: number | null;
-            detail?: string | null;
-            instance?: string | null;
+            status: number | null;
+            detail: string | null;
+            instance: string | null;
         } & {
             [key: string]: unknown;
         };

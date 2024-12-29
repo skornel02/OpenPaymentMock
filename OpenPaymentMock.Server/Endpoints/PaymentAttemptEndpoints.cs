@@ -19,7 +19,7 @@ public static class PaymentAttemptEndpoints
         var group = builder.MapGroup("/payments/{paymentId:guid}")
             .WithTags("Payment Attempt");
 
-        group.MapGet("/current-attempt", async Task<Results<Ok<PaymentAttemptDetailsDto>, NotFound, BadRequest>> (
+        group.MapGet("/current-attempt", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
             Guid paymentId,
             ApplicationDbContext context,
             CancellationToken cancellationToken) =>
@@ -34,12 +34,12 @@ public static class PaymentAttemptEndpoints
 
             if (paymentSituation is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
             if (paymentSituation.Status.IsFinalized())
             {
-                return TypedResults.BadRequest();
+                return TypedResults.Problem("Payment is finalized!", statusCode: 400);
             }
 
             var paymentAttempts = paymentSituation.PaymentAttempts
@@ -63,9 +63,11 @@ public static class PaymentAttemptEndpoints
             }
 
             return TypedResults.Ok(currentAttempt.ToDetailedDto());
-        });
+        })
+            .ProducesProblem(400)
+            .ProducesProblem(404);
 
-        group.MapPost("/attempts/{attemptId:guid}/start", async Task<Results<Ok<PaymentAttemptDetailsDto>, BadRequest, NotFound>> (
+        group.MapPost("/attempts/{attemptId:guid}/start", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -78,12 +80,12 @@ public static class PaymentAttemptEndpoints
 
             if (attempt is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
             if (attempt.Status != PaymentAttemptStatus.NotAttempted)
             {
-                return TypedResults.BadRequest();
+                return TypedResults.Problem("Payment cannot be started!", statusCode: 400);
             }
 
             attempt.Status = PaymentAttemptStatus.Started;
@@ -98,7 +100,7 @@ public static class PaymentAttemptEndpoints
             return TypedResults.Ok(attempt.ToDetailedDto());
         });
 
-        group.MapPost("/attempts/{attemptId:guid}/paid-successfully", async Task<Results<Ok<PaymentAttemptDetailsDto>, BadRequest, NotFound>> (
+        group.MapPost("/attempts/{attemptId:guid}/paid-successfully", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -111,12 +113,12 @@ public static class PaymentAttemptEndpoints
 
             if (attempt is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
             if (attempt.Status != PaymentAttemptStatus.Started)
             {
-                return TypedResults.BadRequest();
+                return TypedResults.Problem("Payment cannot be completed!", statusCode: 400);
             }
 
             attempt.Status = PaymentAttemptStatus.Succeeded;
@@ -130,7 +132,7 @@ public static class PaymentAttemptEndpoints
             return TypedResults.Ok(attempt.ToDetailedDto());
         });
 
-        group.MapPost("/attempts/{attemptId:guid}/payment-cancelled", async Task<Results<Ok<PaymentAttemptDetailsDto>, BadRequest, NotFound>> (
+        group.MapPost("/attempts/{attemptId:guid}/payment-cancelled", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -143,12 +145,12 @@ public static class PaymentAttemptEndpoints
 
             if (attempt is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
             if (attempt.Status != PaymentAttemptStatus.Started)
             {
-                return TypedResults.BadRequest();
+                return TypedResults.Problem("Payment cannot be cancelled!", statusCode: 400);
             }
 
             attempt.Status = PaymentAttemptStatus.PaymentError;
