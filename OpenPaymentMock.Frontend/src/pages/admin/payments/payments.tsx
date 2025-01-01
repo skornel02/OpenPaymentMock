@@ -51,11 +51,23 @@ export default function PaymentsPage() {
         id: 'status',
         accessorFn: (_) => _.status,
         header: 'Status',
+        filterVariant: 'select',
+        mantineFilterSelectProps: {
+          data: [
+            { value: 'Created', label: 'Created' },
+            { value: 'Processing', label: 'Processing' },
+            { value: 'Successed', label: 'Completed' },
+            { value: 'Failed', label: 'Failed' },
+            { value: 'Cancelled', label: 'Cancelled' },
+            { value: 'Refunded', label: 'Refunded' },
+          ],
+        },
       },
       {
         id: 'amount',
         accessorFn: (_) => _.amount,
         header: 'Amount',
+        filterVariant: 'range'
       },
       {
         id: 'currency',
@@ -64,30 +76,42 @@ export default function PaymentsPage() {
       },
       {
         id: 'createdAt',
-        accessorFn: (_) => _.createdAt,
+        accessorFn: (_) => new Date(_.createdAt),
         header: 'Created At',
         sortingFn: 'datetime',
         Cell: ({ cell }) => (
-          <span>{new Date(cell.getValue<string>()).toLocaleString()}</span>
+          <span>{cell.getValue<Date>().toLocaleString()}</span>
         ),
+        filterVariant: 'date-range',
       },
       {
         id: 'finishedAt',
-        accessorFn: (_) => _.finishedAt,
+        accessorFn: (_) => _.finishedAt ? new Date(_.finishedAt) : null,
         header: 'Finished At',
         sortingFn: 'datetime',
-        Cell: ({ cell }) => cell.getValue<string>() ? (
-          <span>{new Date(cell.getValue<string>()).toLocaleString()}</span>
+        Cell: ({ cell }) => cell.getValue<Date>() ? (
+          <span>{cell.getValue<Date>().toLocaleString()}</span>
         ) : (<span>-</span>),
+        filterVariant: 'date-range',
       },
       {
         id: 'partner',
-        accessorFn: (_) => {
-          const partner = partners.find((__) => __.id === _.partnerId);
+        accessorFn: (_) => _.partnerId,
+        Cell: ({ cell }) => {
+          const partner = partners.find((_) => _.id === cell.getValue<string>());
 
-          return partner?.name ?? _.partnerId;
+          return (<span>
+            {partner?.name ?? cell.getValue<string>()}
+          </span>);
         },
         header: 'Partner',
+        filterVariant: 'select',
+        mantineFilterSelectProps: {
+          data: partners.map((_) => ({
+            value: _.id,
+            label: _.name,
+          })),
+        }
       },
     ];
 
@@ -124,6 +148,8 @@ export default function PaymentsPage() {
       columnVisibility: {
         id: false,
       },
+      density: 'xs',
+      showColumnFilters: true,
     },
     enableRowActions: true,
     positionActionsColumn: 'last',
@@ -143,5 +169,7 @@ export default function PaymentsPage() {
     ),
   });
 
-  return <MantineReactTable table={table} />;
+  return (<>
+    <MantineReactTable table={table} />
+  </>);
 }

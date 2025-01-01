@@ -3,9 +3,9 @@
 public record PartnerAccessKeyDetailsDto(
     Guid Id,
     string Name,
-    DateTime CreatedAt,
-    DateTime? ExpiresAt,
-    DateTime? LastUsed,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? ExpiresAt,
+    DateTimeOffset? LastUsed,
     bool Deleted,
     long UsageCount,
     string PartnerName,

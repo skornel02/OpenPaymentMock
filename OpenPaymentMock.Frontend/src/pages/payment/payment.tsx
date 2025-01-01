@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import PaymentNotFound from './components/payment-not-found';
 import PaymentCompleted from './components/payment-completed';
 import { useCallback, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import PaymentProcessing from './components/payment-processing';
 
 export default function PaymentPage() {
   const { paymentId } = useParams();
@@ -21,9 +21,6 @@ export default function PaymentPage() {
     },
   });
 
-  console.log(currentStatus);
-  console.log(error);
-
   const startPaymentAttempt = useCallback(async () => {
     await client.POST('/api/payments/{paymentId}/attempts/{attemptId}/start', {
       params: {
@@ -39,33 +36,61 @@ export default function PaymentPage() {
   }, [paymentId, currentStatus?.id, mutate]);
 
   const completePaymentSuccessfully = useCallback(async () => {
-    await client.POST('/api/payments/{paymentId}/attempts/{attemptId}/paid-successfully', {
-      params: {
-        path: {
-          paymentId: paymentId ?? '00000000-0000-0000-0000-000000000000',
-          attemptId:
-            currentStatus?.id ?? '00000000-0000-0000-0000-000000000000',
+    await client.POST(
+      '/api/payments/{paymentId}/attempts/{attemptId}/paid-successfully',
+      {
+        params: {
+          path: {
+            paymentId: paymentId ?? '00000000-0000-0000-0000-000000000000',
+            attemptId:
+              currentStatus?.id ?? '00000000-0000-0000-0000-000000000000',
+          },
         },
       },
-    });
+    );
 
     mutate();
   }, [paymentId, currentStatus?.id, mutate]);
 
-  
   const completePaymentCancelled = useCallback(async () => {
-    await client.POST('/api/payments/{paymentId}/attempts/{attemptId}/payment-cancelled', {
-      params: {
-        path: {
-          paymentId: paymentId ?? '00000000-0000-0000-0000-000000000000',
-          attemptId:
-            currentStatus?.id ?? '00000000-0000-0000-0000-000000000000',
+    await client.POST(
+      '/api/payments/{paymentId}/attempts/{attemptId}/payment-cancelled',
+      {
+        params: {
+          path: {
+            paymentId: paymentId ?? '00000000-0000-0000-0000-000000000000',
+            attemptId:
+              currentStatus?.id ?? '00000000-0000-0000-0000-000000000000',
+          },
         },
       },
-    });
+    );
 
     mutate();
   }, [paymentId, currentStatus?.id, mutate]);
+
+  const completePaymentFailed = useCallback(
+    async (error: string) => {
+      await client.POST(
+        '/api/payments/{paymentId}/attempts/{attemptId}/payment-issue',
+        {
+          params: {
+            path: {
+              paymentId: paymentId ?? '00000000-0000-0000-0000-000000000000',
+              attemptId:
+                currentStatus?.id ?? '00000000-0000-0000-0000-000000000000',
+            },
+            query: {
+              error,
+            },
+          },
+        },
+      );
+
+      mutate();
+    },
+    [paymentId, currentStatus?.id, mutate],
+  );
 
   useEffect(() => {
     if (currentStatus?.status === 'NotAttempted') {
@@ -77,10 +102,6 @@ export default function PaymentPage() {
     return <PaymentNotFound />;
   }
 
-  if (error?.status === 400) {
-    return <PaymentCompleted />;
-  }
-
   if (
     isLoading ||
     currentStatus === undefined ||
@@ -89,19 +110,25 @@ export default function PaymentPage() {
     return <div>Loading...</div>;
   }
 
+  if (
+    currentStatus.paymentSituation.status === 'Succeeded' ||
+    currentStatus.paymentSituation.status === 'Cancelled' ||
+    currentStatus.paymentSituation.status === 'Failed'
+  ) {
+    return <PaymentCompleted payment={currentStatus.paymentSituation} />;
+  }
+
   if (currentStatus.status === 'Started') {
-    return <div className='flex flex-col p-2'>
-      <h1>Payment started!</h1>
-      
-      <div className='flex flex-row gap-2 mt-4'>
-        <Button onClick={completePaymentSuccessfully}> 
-          Successfull payment
-        </Button>
-        <Button onClick={completePaymentCancelled}>
-          Failed payment
-        </Button>
-      </div>
-    </div>;
+    return (
+      <PaymentProcessing
+        {...{
+          currentStatus,
+          completePaymentSuccessfully,
+          completePaymentCancelled,
+          completePaymentFailed,
+        }}
+      />
+    );
   }
 
   return (

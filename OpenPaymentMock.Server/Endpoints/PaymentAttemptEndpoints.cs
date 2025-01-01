@@ -1,5 +1,6 @@
 ﻿using AsyncKeyedLock;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OpenPaymentMock.Communication.Payments;
 using OpenPaymentMock.Model.Entities;
@@ -16,10 +17,10 @@ public static class PaymentAttemptEndpoints
 
     public static void MapPaymentAttemptEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("/payments/{paymentId:guid}")
+        var group = builder.MapGroup("/payments/{paymentId}")
             .WithTags("Payment Attempt");
 
-        group.MapGet("/current-attempt", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
+        group.MapGet("/current-attempt", async Task<Results<Ok<CurrentPaymentAttemptDto>, ProblemHttpResult>> (
             Guid paymentId,
             ApplicationDbContext context,
             CancellationToken cancellationToken) =>
@@ -29,6 +30,7 @@ public static class PaymentAttemptEndpoints
             var paymentSituation = await context.PaymentSituations
                 .AsNoTracking()
                 .Include(_ => _.PaymentAttempts)
+                .Include(_ => _.Partner)
                 .Where(_ => _.Id == paymentId)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -37,18 +39,14 @@ public static class PaymentAttemptEndpoints
                 return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
-            if (paymentSituation.Status.IsFinalized())
-            {
-                return TypedResults.Problem("Payment is finalized!", statusCode: 400);
-            }
-
             var paymentAttempts = paymentSituation.PaymentAttempts
                 .OrderByDescending(_ => _.CreatedAt)
                 .ToList();
 
             var currentAttempt = paymentAttempts.FirstOrDefault();
 
-            if (currentAttempt is null || currentAttempt.Status.IsFinalized())
+            if (!paymentSituation.Status.IsFinalized()
+                && (currentAttempt is null || currentAttempt.Status.IsFinalized()))
             {
                 currentAttempt = new PaymentAttemptEntity
                 {
@@ -62,12 +60,22 @@ public static class PaymentAttemptEndpoints
                 await context.SaveChangesAsync(cancellationToken);
             }
 
-            return TypedResults.Ok(currentAttempt.ToDetailedDto());
+            if (currentAttempt is null)
+            {
+                return TypedResults.Problem("Payment is finished without attempt!", statusCode: 500);
+            }
+
+            var currentAttemptDto = await context.PaymentAttempts
+                .AsNoTracking()
+                .Where(_ => _.Id == currentAttempt!.Id)
+                .ToCurrentDto()
+                .FirstAsync(cancellationToken);
+
+            return TypedResults.Ok(currentAttemptDto);
         })
-            .ProducesProblem(400)
             .ProducesProblem(404);
 
-        group.MapPost("/attempts/{attemptId:guid}/start", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
+        group.MapPost("/attempts/{attemptId:guid}/start", async Task<Results<Accepted, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -97,10 +105,10 @@ public static class PaymentAttemptEndpoints
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return TypedResults.Ok(attempt.ToDetailedDto());
+            return TypedResults.Accepted($"/payments/{paymentId}/current-attempt");
         });
 
-        group.MapPost("/attempts/{attemptId:guid}/paid-successfully", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
+        group.MapPost("/attempts/{attemptId:guid}/paid-successfully", async Task<Results<Accepted, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -129,10 +137,10 @@ public static class PaymentAttemptEndpoints
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return TypedResults.Ok(attempt.ToDetailedDto());
+            return TypedResults.Accepted($"/payments/{paymentId}/current-attempt");
         });
 
-        group.MapPost("/attempts/{attemptId:guid}/payment-cancelled", async Task<Results<Ok<PaymentAttemptDetailsDto>, ProblemHttpResult>> (
+        group.MapPost("/attempts/{attemptId:guid}/payment-cancelled", async Task<Results<Accepted, ProblemHttpResult>> (
             Guid paymentId,
             Guid attemptId,
             ApplicationDbContext context,
@@ -162,7 +170,38 @@ public static class PaymentAttemptEndpoints
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return TypedResults.Ok(attempt.ToDetailedDto());
+            return TypedResults.Accepted($"/payments/{paymentId}/current-attempt");
+        });
+
+        group.MapPost("/attempts/{attemptId:guid}/payment-issue", async Task<Results<Accepted, ProblemHttpResult>> (
+            Guid paymentId,
+            Guid attemptId,
+            [FromQuery] string? error,
+            ApplicationDbContext context,
+            CancellationToken cancellationToken) =>
+        {
+            var attempt = await context.PaymentAttempts
+                .Include(_ => _.PaymentSituation)
+                .Where(_ => _.PaymentSituationId == paymentId && _.Id == attemptId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (attempt is null)
+            {
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
+            }
+
+            if (attempt.Status != PaymentAttemptStatus.Started)
+            {
+                return TypedResults.Problem("Payment cannot be cancelled!", statusCode: 400);
+            }
+
+            attempt.Status = PaymentAttemptStatus.PaymentError;
+            attempt.PaymentError = error;
+            attempt.FinishedAt = DateTime.UtcNow;
+
+            await context.SaveChangesAsync(cancellationToken);
+
+            return TypedResults.Accepted($"/payments/{paymentId}/current-attempt");
         });
     }
 }

@@ -15,7 +15,7 @@ public static partial class ModelMapperExtensions
 {
     private static Guid GenerateId() => NewId.NextGuid();
 
-    private static DateTime Now() => DateTime.UtcNow;
+    private static DateTimeOffset Now() => DateTimeOffset.UtcNow;
 
     private static string GenerateAccessToken() => AccessKeyService.RandomAccessToken;
 
@@ -36,6 +36,11 @@ public static partial class ModelMapperExtensions
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentAttempts))]
     public static partial PaymentSituationDetailsDto ToDetailedDto(this PaymentSituationEntity situation);
 
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.CreatedAt))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.PartnerId))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.Timeout))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentAttempts))]
+    public static partial PaymentSituationPublicDto ToPublicDto(this PaymentSituationEntity situation);
 
     [MapValue(nameof(PaymentSituationEntity.Id), Use = nameof(GenerateId))]
     [MapValue(nameof(PaymentSituationEntity.CreatedAt), Use = nameof(Now))]
@@ -49,6 +54,10 @@ public static partial class ModelMapperExtensions
 
     [MapperIgnoreSource(nameof(PaymentAttemptEntity.PaymentSituation))]
     public static partial PaymentAttemptDetailsDto ToDetailedDto(this PaymentAttemptEntity situation);
+
+    public static partial IQueryable<CurrentPaymentAttemptDto> ToCurrentDto(this IQueryable<PaymentAttemptEntity> attempts);
+
+    public static partial CurrentPaymentAttemptDto ToCurrentDto(this PaymentAttemptEntity attempt);
 
     public static partial IQueryable<PartnerAccessKeyDetailsDto> ToDetailedDto(this IQueryable<PartnerAccessKeyEntity> keys);
 

@@ -5,17 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "codegen": "openapi-typescript http://localhost:5109/swagger/v1/swagger.json -o src/lib/openpaymentmock-backend.d.ts --root-types --properties-required-by-default"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
+    "@faker-js/faker": "^9.3.0",
     "@mantine/core": "^7.15.2",
     "@mantine/dates": "^7.15.2",
     "@mantine/hooks": "^7.15.2",
     "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
@@ -31,6 +33,7 @@
     "mantine-react-table": "2.0.0-beta.7",
     "openapi-fetch": "^0.13.3",
     "react": "^18.3.1",
+    "react-credit-cards-2": "^1.0.3",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
     "swr-openapi": "^5.1.2",

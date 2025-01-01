@@ -10,9 +10,9 @@ public class PaymentAttemptEntity
 
     public string? PaymentError { get; set; }
 
-    public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public required DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? FinishedAt { get; set; }
+    public DateTimeOffset? FinishedAt { get; set; }
 
     public required Guid PaymentSituationId { get; set; }
 

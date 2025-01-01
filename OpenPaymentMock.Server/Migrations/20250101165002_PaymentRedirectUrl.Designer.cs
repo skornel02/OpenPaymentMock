@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OpenPaymentMock.Server.Persistance;
 
@@ -10,9 +11,11 @@ using OpenPaymentMock.Server.Persistance;
 namespace OpenPaymentMock.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101165002_PaymentRedirectUrl")]
+    partial class PaymentRedirectUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -56,7 +59,7 @@ namespace OpenPaymentMock.Server.Migrations
 
                     b.HasIndex("PartnerId");
 
-                    b.ToTable("PartnerAccessKeys", (string)null);
+                    b.ToTable("PartnerAccessKeys");
                 });
 
             modelBuilder.Entity("OpenPaymentMock.Model.Entities.PartnerEntity", b =>
@@ -74,7 +77,7 @@ namespace OpenPaymentMock.Server.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Partners", (string)null);
+                    b.ToTable("Partners");
                 });
 
             modelBuilder.Entity("OpenPaymentMock.Model.Entities.PaymentAttemptEntity", b =>
@@ -102,7 +105,7 @@ namespace OpenPaymentMock.Server.Migrations
 
                     b.HasIndex("PaymentSituationId");
 
-                    b.ToTable("PaymentAttempts", (string)null);
+                    b.ToTable("PaymentAttempts");
                 });
 
             modelBuilder.Entity("OpenPaymentMock.Model.Entities.PaymentSituationEntity", b =>
@@ -145,7 +148,7 @@ namespace OpenPaymentMock.Server.Migrations
 
                     b.HasIndex("PartnerId");
 
-                    b.ToTable("PaymentSituations", (string)null);
+                    b.ToTable("PaymentSituations");
                 });
 
             modelBuilder.Entity("OpenPaymentMock.Model.Entities.PartnerAccessKeyEntity", b =>
@@ -178,7 +181,7 @@ namespace OpenPaymentMock.Server.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("OpenPaymentMock.Model.Entities.PaymentSituationEntity.PaymentOptions#OpenPaymentMock.Model.Options.PaymentOptions", "PaymentOptions", b1 =>
+                    b.OwnsOne("OpenPaymentMock.Model.Options.PaymentOptions", "PaymentOptions", b1 =>
                         {
                             b1.Property<Guid>("PaymentSituationEntityId")
                                 .HasColumnType("TEXT");
@@ -191,7 +194,7 @@ namespace OpenPaymentMock.Server.Migrations
 
                             b1.HasKey("PaymentSituationEntityId");
 
-                            b1.ToTable("PaymentSituations", (string)null);
+                            b1.ToTable("PaymentSituations");
 
                             b1.ToJson("PaymentOptions");
 

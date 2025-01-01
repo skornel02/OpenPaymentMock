@@ -15,11 +15,13 @@ public class PaymentSituationEntity
 
     public required string CallbackUrl { get; set; }
 
+    public required string RedirectUrl { get; set; }
+
     public required TimeSpan Timeout { get; set; }
 
-    public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public required DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? FinishedAt { get; set; }
+    public DateTimeOffset? FinishedAt { get; set; }
 
     public PaymentOptions PaymentOptions { get; set; } = new();
 

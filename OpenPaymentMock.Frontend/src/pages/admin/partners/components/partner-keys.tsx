@@ -13,9 +13,9 @@ import { useAuthentication } from '@/contexts/authentication-context';
 import { toast } from '@/hooks/use-toast';
 import { SchemaPartnerShortDto } from '@/lib/openpaymentmock-backend';
 import { client, useBackendQuery } from '@/lib/openpaymentmock-client';
-import { CopyButton, Text } from '@mantine/core';
+import { CopyButton } from '@mantine/core';
 import { Check, Copy, Trash } from 'lucide-react';
-import { DateTimePicker } from '@mantine/dates';
+import { DateTimePicker, DateValue } from '@mantine/dates';
 import { useState } from 'react';
 
 export default function PartnerKeys({
@@ -45,7 +45,7 @@ export default function PartnerKeys({
   );
 
   const createNewKey = async () => {
-    const { data } = await client.POST('/api/partners/{id}/access-keys', {
+    const { data, error } = await client.POST('/api/partners/{id}/access-keys', {
       params: {
         path: {
           id: partner.id!,
@@ -66,7 +66,7 @@ export default function PartnerKeys({
     } else {
       toast({
         title: 'Error creating access key',
-        description: error.message,
+        description: <>{error?.message ?? 'An error occurred while creating key.'}</>,
         variant: 'destructive',
       });
     }

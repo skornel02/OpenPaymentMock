@@ -25,7 +25,7 @@ import { AuthenticationProvider } from '@/contexts/authentication-context';
 
 export default function AdminLayout() {
   const [apiKey, setApiKey] = useState<string>("SecretAdminApiKey");
-  const [authenticated, setAuthenticated] = useState<boolean>(true);
+  const [authenticated,] = useState<boolean>(true);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 

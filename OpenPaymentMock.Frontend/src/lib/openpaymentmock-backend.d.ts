@@ -540,16 +540,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["CurrentPaymentAttemptDto"];
                     };
                 };
                 /** @description Not Found */
@@ -592,14 +583,12 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -630,14 +619,12 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -668,14 +655,50 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Accepted */
+                202: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["PaymentAttemptDetailsDto"];
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{paymentId}/attempts/{attemptId}/payment-issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    error?: string;
+                };
+                header?: never;
+                path: {
+                    paymentId: string;
+                    attemptId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
                     };
+                    content?: never;
                 };
             };
         };
@@ -689,6 +712,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CurrentPaymentAttemptDto: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["PaymentAttemptStatus"];
+            paymentError: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: uuid */
+            paymentSituationId: string;
+            paymentSituation: components["schemas"]["PaymentSituationPublicDto"];
+        };
         PartnerAccessKeyCreationDto: {
             name: string;
             /** Format: date-time */
@@ -753,12 +789,14 @@ export interface components {
         PaymentAttemptStatus: "NotAttempted" | "Started" | "Succeeded" | "TimedOut" | "BankVerificationRequired" | "PaymentError";
         PaymentOptions: {
             allowInvalidCards: boolean;
+            generateRandomCardDetails: boolean;
         };
         PaymentSituationCreationDto: {
             /** Format: double */
             amount: number;
             currency: string;
             callbackUrl: string;
+            redirectUrl: string;
             /** @example 00:00:00 */
             timeout: string;
             paymentOptions: components["schemas"]["PaymentOptions"];
@@ -771,6 +809,7 @@ export interface components {
             amount: number;
             currency: string;
             callbackUrl: string;
+            redirectUrl: string;
             /** @example 00:00:00 */
             timeout: string;
             /** Format: date-time */
@@ -780,6 +819,20 @@ export interface components {
             paymentOptions: components["schemas"]["PaymentOptions"];
             /** Format: uuid */
             partnerId: string;
+        };
+        PaymentSituationPublicDto: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["PaymentSituationStatus"];
+            /** Format: double */
+            amount: number;
+            currency: string;
+            callbackUrl: string;
+            redirectUrl: string;
+            /** Format: date-time */
+            finishedAt: string | null;
+            paymentOptions: components["schemas"]["PaymentOptions"];
+            partnerName: string;
         };
         /** @enum {string} */
         PaymentSituationStatus: "Created" | "Processing" | "Succeeded" | "Failed" | "Cancelled" | "Refunded";
@@ -800,6 +853,7 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaCurrentPaymentAttemptDto = components['schemas']['CurrentPaymentAttemptDto'];
 export type SchemaPartnerAccessKeyCreationDto = components['schemas']['PartnerAccessKeyCreationDto'];
 export type SchemaPartnerAccessKeyDetailsDto = components['schemas']['PartnerAccessKeyDetailsDto'];
 export type SchemaPartnerAccessKeyDetailsWithSecretDto = components['schemas']['PartnerAccessKeyDetailsWithSecretDto'];
@@ -810,6 +864,7 @@ export type SchemaPaymentAttemptStatus = components['schemas']['PaymentAttemptSt
 export type SchemaPaymentOptions = components['schemas']['PaymentOptions'];
 export type SchemaPaymentSituationCreationDto = components['schemas']['PaymentSituationCreationDto'];
 export type SchemaPaymentSituationDetailsDto = components['schemas']['PaymentSituationDetailsDto'];
+export type SchemaPaymentSituationPublicDto = components['schemas']['PaymentSituationPublicDto'];
 export type SchemaPaymentSituationStatus = components['schemas']['PaymentSituationStatus'];
 export type SchemaProblemDetails = components['schemas']['ProblemDetails'];
 export type $defs = Record<string, never>;

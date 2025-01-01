@@ -119,7 +119,7 @@ export default function PartnersPage() {
             </div>
         ),
         positionActionsColumn: 'last',
-        renderRowActions: ({ row, table }) => (
+        renderRowActions: ({ row }) => (
             <div className="flex flex-row gap-2">
                 {/* <TooltipProvider>
                     <Tooltip>
