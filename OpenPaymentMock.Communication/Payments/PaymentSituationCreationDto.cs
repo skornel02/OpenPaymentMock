@@ -7,6 +7,7 @@ public record PaymentSituationCreationDto(
     string Currency,
     string CallbackUrl,
     string RedirectUrl,
+    string? Secret,
     TimeSpan Timeout,
     PaymentOptions? PaymentOptions
 );

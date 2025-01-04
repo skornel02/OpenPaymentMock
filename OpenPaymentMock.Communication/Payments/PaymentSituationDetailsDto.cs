@@ -14,5 +14,6 @@ public record PaymentSituationDetailsDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? FinishedAt,
     PaymentOptions PaymentOptions,
-    Guid PartnerId
+    Guid PartnerId,
+    PaymentCallbackStatus? CallbackStatus
 );

@@ -8,6 +8,7 @@ using OpenPaymentMock.Model.Enums;
 using OpenPaymentMock.Model.Extensions;
 using OpenPaymentMock.Server.Extensions;
 using OpenPaymentMock.Server.Persistance;
+using OpenPaymentMock.Server.StateMachines;
 
 namespace OpenPaymentMock.Server.Endpoints;
 
@@ -91,16 +92,45 @@ public static class PaymentAttemptEndpoints
                 return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
-            if (attempt.Status != PaymentAttemptStatus.NotAttempted)
+            try
+            {
+                var stateMachine = attempt.GetStateMachine(out _);
+                stateMachine.Fire(PaymentAttemptTrigger.Started);
+            }
+            catch (InvalidOperationException)
             {
                 return TypedResults.Problem("Payment cannot be started!", statusCode: 400);
             }
 
-            attempt.Status = PaymentAttemptStatus.Started;
+            await context.SaveChangesAsync(cancellationToken);
 
-            if (attempt.PaymentSituation.Status == PaymentSituationStatus.Created)
+            return TypedResults.Accepted($"/payments/{paymentId}/current-attempt");
+        });
+
+        group.MapPost("/attempts/{attemptId:guid}/bank-verification", async Task<Results<Accepted, ProblemHttpResult>> (
+            Guid paymentId,
+            Guid attemptId,
+            ApplicationDbContext context,
+            CancellationToken cancellationToken) =>
+        {
+            var attempt = await context.PaymentAttempts
+                .Include(_ => _.PaymentSituation)
+                .Where(_ => _.PaymentSituationId == paymentId && _.Id == attemptId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (attempt is null)
             {
-                attempt.PaymentSituation.Status = PaymentSituationStatus.Processing;
+                return TypedResults.Problem("Payment not found!", statusCode: 404);
+            }
+
+            try
+            {
+                var stateMachine = attempt.GetStateMachine(out _);
+                stateMachine.Fire(PaymentAttemptTrigger.BankVerification);
+            }
+            catch (InvalidOperationException)
+            {
+                return TypedResults.Problem("Payment cannot enter bank verification!", statusCode: 400);
             }
 
             await context.SaveChangesAsync(cancellationToken);
@@ -124,16 +154,15 @@ public static class PaymentAttemptEndpoints
                 return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
-            if (attempt.Status != PaymentAttemptStatus.Started)
+            try
+            {
+                var stateMachine = attempt.GetStateMachine(out _);
+                stateMachine.Fire(PaymentAttemptTrigger.Success);
+            }
+            catch (InvalidOperationException)
             {
                 return TypedResults.Problem("Payment cannot be completed!", statusCode: 400);
             }
-
-            attempt.Status = PaymentAttemptStatus.Succeeded;
-            attempt.FinishedAt = DateTime.UtcNow;
-
-            attempt.PaymentSituation.Status = PaymentSituationStatus.Succeeded;
-            attempt.PaymentSituation.FinishedAt = DateTime.UtcNow;
 
             await context.SaveChangesAsync(cancellationToken);
 
@@ -156,17 +185,15 @@ public static class PaymentAttemptEndpoints
                 return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
-            if (attempt.Status != PaymentAttemptStatus.Started)
+            try
+            {
+                var stateMachine = attempt.GetStateMachine(out _);
+                stateMachine.Fire(PaymentAttemptTrigger.Cancel);
+            }
+            catch (InvalidOperationException)
             {
                 return TypedResults.Problem("Payment cannot be cancelled!", statusCode: 400);
             }
-
-            attempt.Status = PaymentAttemptStatus.PaymentError;
-            attempt.PaymentError = "Payment was cancelled by the user";
-            attempt.FinishedAt = DateTime.UtcNow;
-
-            attempt.PaymentSituation.Status = PaymentSituationStatus.Failed;
-            attempt.PaymentSituation.FinishedAt = DateTime.UtcNow;
 
             await context.SaveChangesAsync(cancellationToken);
 
@@ -190,14 +217,15 @@ public static class PaymentAttemptEndpoints
                 return TypedResults.Problem("Payment not found!", statusCode: 404);
             }
 
-            if (attempt.Status != PaymentAttemptStatus.Started)
+            try
             {
-                return TypedResults.Problem("Payment cannot be cancelled!", statusCode: 400);
+                var stateMachine = attempt.GetStateMachine(out var paymentIssueTrigger);
+                stateMachine.Fire(paymentIssueTrigger, error);
             }
-
-            attempt.Status = PaymentAttemptStatus.PaymentError;
-            attempt.PaymentError = error;
-            attempt.FinishedAt = DateTime.UtcNow;
+            catch (InvalidOperationException)
+            {
+                return TypedResults.Problem("Payment cannot handle a payment issue!", statusCode: 400);
+            }
 
             await context.SaveChangesAsync(cancellationToken);
 

@@ -15,6 +15,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<PaymentAttemptEntity> PaymentAttempts { get; set; } = null!;
     public DbSet<PaymentSituationEntity> PaymentSituations { get; set; } = null!;
 
+    public DbSet<PaymentCallbackEntity> Callbacks { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

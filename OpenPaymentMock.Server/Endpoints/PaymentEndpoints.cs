@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OpenPaymentMock.Communication.Payment;
 using OpenPaymentMock.Communication.Payments;
 using OpenPaymentMock.Server.Extensions;
 using OpenPaymentMock.Server.Filters;
+using OpenPaymentMock.Server.Options;
 using OpenPaymentMock.Server.Persistance;
 
 namespace OpenPaymentMock.Server.Endpoints;
@@ -37,10 +39,11 @@ public static class PaymentEndpoints
         })
             .UseRoleFilter("Admin", "Partner");
 
-        endpoints.MapPost("", async Task<Results<Created<PaymentSituationDetailsDto>, BadRequest>> (
+        endpoints.MapPost("", async Task<Results<Created<PaymentCreatedDto>, BadRequest>> (
             [FromBody] PaymentSituationCreationDto dto,
             [FromQuery] Guid partnerId,
             ApplicationDbContext context,
+            IOptions<ApplicationOptions> options,
             CancellationToken cancellationToken) =>
         {
             var entity = dto.ToEntity(partnerId);
@@ -48,7 +51,16 @@ public static class PaymentEndpoints
             await context.PaymentSituations.AddAsync(entity, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 
-            return TypedResults.Created($"/api/payments/{entity.Id}", entity.ToDetailedDto());
+            var detailedDto = context.PaymentSituations
+                .AsNoTracking()
+                .Single(_ => _.Id == entity.Id)
+                .ToDetailedDto();
+
+            var baseUrl = new Uri(options.Value.ApplicationUrl);
+            var paymentUrl = new Uri(baseUrl, $"payments/{detailedDto.Id.ToString()}");
+            var createdDto = new PaymentCreatedDto(detailedDto, paymentUrl.ToString());
+
+            return TypedResults.Created($"/api/payments/{entity.Id}", createdDto);
         })
             .UseRoleFilter("Admin", "Partner");
 
@@ -61,12 +73,7 @@ public static class PaymentEndpoints
                 .AsNoTracking()
                 .SingleOrDefaultAsync(p => p.Id == paymentId, cancellationToken);
 
-            if (payment is null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            return TypedResults.Ok(payment.ToDetailedDto());
+            return payment is null ? (Results<Ok<PaymentSituationDetailsDto>, NotFound>)TypedResults.NotFound() : (Results<Ok<PaymentSituationDetailsDto>, NotFound>)TypedResults.Ok(payment.ToDetailedDto());
         })
             .UseRoleFilter("Admin", "Partner");
 

@@ -3,16 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OpenPaymentMock.Server.Endpoints;
 using OpenPaymentMock.Server.Extensions;
+using OpenPaymentMock.Server.Interfaces;
 using OpenPaymentMock.Server.Middlewares;
 using OpenPaymentMock.Server.Options;
 using OpenPaymentMock.Server.Persistance;
+using OpenPaymentMock.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions<ApplicationOptions>()
+    .Bind(builder.Configuration.GetSection(ApplicationOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddOptions<AdminOptions>()
     .Bind(builder.Configuration.GetSection(AdminOptions.SectionName))
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<ICallbackService, CallbackService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,6 +54,7 @@ app.UseApiKeyMiddleware();
 app.UsePartnerAccessKeyMiddleware();
 
 app.MapApiEndpoints();
+app.MapStateMachineVisualizationEndpoints();
 
 app.MapFallbackToFile("index.html");
 

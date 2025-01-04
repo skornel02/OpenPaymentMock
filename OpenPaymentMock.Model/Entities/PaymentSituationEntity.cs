@@ -17,6 +17,8 @@ public class PaymentSituationEntity
 
     public required string RedirectUrl { get; set; }
 
+    public string? Secret { get; set; }
+
     public required TimeSpan Timeout { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
@@ -30,4 +32,6 @@ public class PaymentSituationEntity
     public PartnerEntity Partner { get; set; } = null!;
 
     public List<PaymentAttemptEntity> PaymentAttempts { get; set; } = null!;
+
+    public PaymentCallbackEntity? Callback { get; set; }
 }
