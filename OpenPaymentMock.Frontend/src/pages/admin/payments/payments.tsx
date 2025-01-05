@@ -16,6 +16,9 @@ import {
 } from '@/components/ui/tooltip';
 import { CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import PaymentDetails from './components/payment-details';
+import { AddPayment } from './components/add-payment';
+import { Separator } from '@/components/ui/separator';
 
 export default function PaymentsPage() {
   const { apiKey } = useAuthentication();
@@ -67,7 +70,7 @@ export default function PaymentsPage() {
         id: 'amount',
         accessorFn: (_) => _.amount,
         header: 'Amount',
-        filterVariant: 'range'
+        filterVariant: 'range',
       },
       {
         id: 'currency',
@@ -86,23 +89,26 @@ export default function PaymentsPage() {
       },
       {
         id: 'finishedAt',
-        accessorFn: (_) => _.finishedAt ? new Date(_.finishedAt) : null,
+        accessorFn: (_) => (_.finishedAt ? new Date(_.finishedAt) : null),
         header: 'Finished At',
         sortingFn: 'datetime',
-        Cell: ({ cell }) => cell.getValue<Date>() ? (
-          <span>{cell.getValue<Date>().toLocaleString()}</span>
-        ) : (<span>-</span>),
+        Cell: ({ cell }) =>
+          cell.getValue<Date>() ? (
+            <span>{cell.getValue<Date>().toLocaleString()}</span>
+          ) : (
+            <span>-</span>
+          ),
         filterVariant: 'date-range',
       },
       {
         id: 'partner',
         accessorFn: (_) => _.partnerId,
         Cell: ({ cell }) => {
-          const partner = partners.find((_) => _.id === cell.getValue<string>());
+          const partner = partners.find(
+            (_) => _.id === cell.getValue<string>(),
+          );
 
-          return (<span>
-            {partner?.name ?? cell.getValue<string>()}
-          </span>);
+          return <span>{partner?.name ?? cell.getValue<string>()}</span>;
         },
         header: 'Partner',
         filterVariant: 'select',
@@ -111,7 +117,7 @@ export default function PaymentsPage() {
             value: _.id,
             label: _.name,
           })),
-        }
+        },
       },
     ];
 
@@ -144,12 +150,19 @@ export default function PaymentsPage() {
     enableGrouping: true,
     initialState: {
       grouping: ['partner', 'status'],
-      expanded: true,
+      sorting: [
+        { id: 'partner', desc: false },
+        { id: 'createdAt', desc: true },
+      ],
       columnVisibility: {
         id: false,
       },
       density: 'xs',
       showColumnFilters: true,
+      pagination: {
+        pageSize: 100,
+        pageIndex: 0,
+      },
     },
     enableRowActions: true,
     positionActionsColumn: 'last',
@@ -158,7 +171,7 @@ export default function PaymentsPage() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Link to={`/payments/${row.original.id}`} target='_blank'>
+              <Link to={`/payments/${row.original.id}`} target="_blank">
                 <CreditCard />
               </Link>
             </TooltipTrigger>
@@ -167,9 +180,18 @@ export default function PaymentsPage() {
         </TooltipProvider>
       </div>
     ),
+    renderDetailPanel: ({ row }) => (
+      <PaymentDetails payment={row.original}></PaymentDetails>
+    ),
   });
 
-  return (<>
-    <MantineReactTable table={table} />
-  </>);
+  console.log(table.getExpandedRowModel());
+
+  return (
+    <div className="flex flex-col gap-2">
+      {partnersData && <AddPayment partners={partnersData} reload={() => mutate()} />}
+      <Separator/>
+      <MantineReactTable table={table} />
+    </div>
+  );
 }

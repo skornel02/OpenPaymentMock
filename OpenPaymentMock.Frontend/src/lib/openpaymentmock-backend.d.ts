@@ -383,7 +383,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["PaymentSituationDetailsDto"];
+                        "application/json": components["schemas"]["PaymentCreatedDto"];
                     };
                 };
                 /** @description Bad Request */
@@ -598,6 +598,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/payments/{paymentId}/attempts/{attemptId}/bank-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                    attemptId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/payments/{paymentId}/attempts/{attemptId}/paid-successfully": {
         parameters: {
             query?: never;
@@ -708,6 +744,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/statemachines/mermaid/payment-attempt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/statemachines/mermaid/payment-situation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -787,6 +889,12 @@ export interface components {
         };
         /** @enum {string} */
         PaymentAttemptStatus: "NotAttempted" | "Started" | "Succeeded" | "TimedOut" | "BankVerificationRequired" | "PaymentError";
+        /** @enum {string} */
+        PaymentCallbackStatus: "Pending" | "Success" | "Failure";
+        PaymentCreatedDto: {
+            payment: components["schemas"]["PaymentSituationDetailsDto"];
+            redirectUrl: string;
+        };
         PaymentOptions: {
             allowInvalidCards: boolean;
             generateRandomCardDetails: boolean;
@@ -797,6 +905,7 @@ export interface components {
             currency: string;
             callbackUrl: string;
             redirectUrl: string;
+            secret: string | null;
             /** @example 00:00:00 */
             timeout: string;
             paymentOptions: components["schemas"]["PaymentOptions"];
@@ -819,6 +928,7 @@ export interface components {
             paymentOptions: components["schemas"]["PaymentOptions"];
             /** Format: uuid */
             partnerId: string;
+            callbackStatus: components["schemas"]["PaymentCallbackStatus"];
         };
         PaymentSituationPublicDto: {
             /** Format: uuid */
@@ -861,6 +971,8 @@ export type SchemaPartnerCreationDto = components['schemas']['PartnerCreationDto
 export type SchemaPartnerShortDto = components['schemas']['PartnerShortDto'];
 export type SchemaPaymentAttemptDetailsDto = components['schemas']['PaymentAttemptDetailsDto'];
 export type SchemaPaymentAttemptStatus = components['schemas']['PaymentAttemptStatus'];
+export type SchemaPaymentCallbackStatus = components['schemas']['PaymentCallbackStatus'];
+export type SchemaPaymentCreatedDto = components['schemas']['PaymentCreatedDto'];
 export type SchemaPaymentOptions = components['schemas']['PaymentOptions'];
 export type SchemaPaymentSituationCreationDto = components['schemas']['PaymentSituationCreationDto'];
 export type SchemaPaymentSituationDetailsDto = components['schemas']['PaymentSituationDetailsDto'];
