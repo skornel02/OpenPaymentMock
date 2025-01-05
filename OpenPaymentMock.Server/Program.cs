@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OpenPaymentMock.Server.BackgroundServices;
 using OpenPaymentMock.Server.Endpoints;
 using OpenPaymentMock.Server.Extensions;
 using OpenPaymentMock.Server.Interfaces;
@@ -23,6 +24,8 @@ builder.Services.AddOptions<AdminOptions>()
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ICallbackService, CallbackService>();
+
+builder.Services.AddHostedService<CallbackBackgroundService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

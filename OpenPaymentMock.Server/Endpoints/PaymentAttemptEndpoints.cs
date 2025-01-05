@@ -158,6 +158,11 @@ public static class PaymentAttemptEndpoints
             {
                 var stateMachine = attempt.GetStateMachine(out _);
                 stateMachine.Fire(PaymentAttemptTrigger.Success);
+
+                if (attempt.PaymentSituation.Callback is not null)
+                {
+                    context.Entry(attempt.PaymentSituation.Callback).State = EntityState.Added;
+                }
             }
             catch (InvalidOperationException)
             {
@@ -189,6 +194,11 @@ public static class PaymentAttemptEndpoints
             {
                 var stateMachine = attempt.GetStateMachine(out _);
                 stateMachine.Fire(PaymentAttemptTrigger.Cancel);
+
+                if (attempt.PaymentSituation.Callback is not null)
+                {
+                    context.Entry(attempt.PaymentSituation.Callback).State = EntityState.Added;
+                }
             }
             catch (InvalidOperationException)
             {

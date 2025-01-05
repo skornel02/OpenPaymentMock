@@ -1,4 +1,5 @@
-﻿using OpenPaymentMock.Model.Entities;
+﻿using MassTransit;
+using OpenPaymentMock.Model.Entities;
 using OpenPaymentMock.Model.Enums;
 using Stateless;
 
@@ -30,12 +31,28 @@ public static class PaymentSituationStateMachine
             .OnEntry(() =>
             {
                 situation.FinishedAt = DateTimeOffset.Now;
+
+                situation.Callback = new()
+                {
+                    Id = NewId.NextGuid(),
+                    CallbackUrl = situation.CallbackUrl,
+                    PaymentSituationId = situation.Id,
+                    Status = PaymentCallbackStatus.Pending,
+                };
             });
 
         stateMachine.Configure(PaymentSituationStatus.Failed)
             .OnEntry(() =>
             {
                 situation.FinishedAt = DateTimeOffset.Now;
+
+                situation.Callback = new()
+                {
+                    Id = NewId.NextGuid(),
+                    CallbackUrl = situation.CallbackUrl,
+                    PaymentSituationId = situation.Id,
+                    Status = PaymentCallbackStatus.Pending,
+                };
             });
 
         stateMachine.OnUnhandledTrigger((_, _) =>
