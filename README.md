@@ -1,5 +1,7 @@
 # Open Payment Mock
 
+[![Docker Image CI](https://github.com/skornel02/OpenPaymentMock/actions/workflows/docker-build-push.yml/badge.svg?branch=main)](https://github.com/skornel02/OpenPaymentMock/actions/workflows/docker-build-push.yml)
+
 OpenPaymentMock is a third-party payment provider designed to simulate payment processing in a secure and reliable manner. It is ideal for developers and teams who need a lightweight, mock implementation of payment gateways for testing, integration, or prototyping without the complexity or costs of interacting with real payment providers.
 
 ## Getting started
