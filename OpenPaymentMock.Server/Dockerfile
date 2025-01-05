@@ -13,7 +13,7 @@ WORKDIR /src/OpenPaymentMock.Frontend
 RUN npm i
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["./OpenPaymentMock.Server/OpenPaymentMock.Server.csproj", "./OpenPaymentMock.Server/"]
