@@ -1,0 +1,16 @@
+services:
+  openmockpayment:
+    image: ghcr.io/skornel02/openpaymentmock:main
+    container_name: openpaymentmock
+    restart: always
+    environment:
+      ConnectionStrings__Sqlite: Data Source=/app/db/OpenPaymentMock.db
+      Application__ApplicationUrl: http://your-openmockpayment-instance.local:8080
+      Admin__ApiKey: AdminApiKey
+    volumes:
+      - opm-db:/app/db/
+    ports:
+      - 8080:8080
+
+volumes:
+  opm-db:
