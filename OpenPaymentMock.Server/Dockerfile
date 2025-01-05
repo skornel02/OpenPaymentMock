@@ -6,12 +6,17 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-FROM node:20-slim AS node
+FROM --platform=$BUILDPLATFORM node:20-slim AS node
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 WORKDIR /src
 COPY ./OpenPaymentMock.Frontend /src/OpenPaymentMock.Frontend
 WORKDIR /src/OpenPaymentMock.Frontend
-RUN npm i
-RUN npm run build
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm run build
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
