@@ -12,6 +12,8 @@ public class PaymentAttemptEntity
 
     public required DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public required DateTimeOffset TimeoutAt { get; set; }
+
     public DateTimeOffset? FinishedAt { get; set; }
 
     public required Guid PaymentSituationId { get; set; }

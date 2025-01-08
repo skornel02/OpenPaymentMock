@@ -18,6 +18,9 @@ public static partial class ModelMapperExtensions
 
     private static DateTimeOffset Now() => DateTimeOffset.UtcNow;
 
+    [UserMapping(Default = false)]
+    private static DateTimeOffset ToTimeoutAfterNow(TimeSpan timeout) => DateTimeOffset.UtcNow.Add(timeout);
+
     private static string GenerateAccessToken() => AccessKeyService.RandomAccessToken;
 
     public static partial IQueryable<PartnerShortDto> ToShortDto(this IQueryable<PartnerEntity> partners);
@@ -36,23 +39,25 @@ public static partial class ModelMapperExtensions
     [MapperIgnoreSource(nameof(PaymentSituationEntity.Partner))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentAttempts))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.Secret))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.Callbacks))]
     public static partial PaymentSituationDetailsDto ToDetailedDto(this PaymentSituationEntity situation);
 
     [MapperIgnoreSource(nameof(PaymentSituationEntity.CreatedAt))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PartnerId))]
-    [MapperIgnoreSource(nameof(PaymentSituationEntity.Timeout))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.TimeoutAt))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentAttempts))]
-    [MapperIgnoreSource(nameof(PaymentSituationEntity.Callback))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.Callbacks))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.Secret))]
     public static partial PaymentSituationPublicDto ToPublicDto(this PaymentSituationEntity situation);
 
     [MapValue(nameof(PaymentSituationEntity.Id), Use = nameof(GenerateId))]
     [MapValue(nameof(PaymentSituationEntity.CreatedAt), Use = nameof(Now))]
     [MapValue(nameof(PaymentSituationEntity.Status), PaymentSituationStatus.Created)]
+    [MapProperty(nameof(PaymentSituationCreationDto.Timeout), nameof(PaymentSituationEntity.TimeoutAt), Use = nameof(ToTimeoutAfterNow))]
     [MapperIgnoreTarget(nameof(PaymentSituationEntity.Partner))]
     [MapperIgnoreTarget(nameof(PaymentSituationEntity.FinishedAt))]
     [MapperIgnoreTarget(nameof(PaymentSituationEntity.PaymentAttempts))]
-    [MapperIgnoreTarget(nameof(PaymentSituationEntity.Callback))]
+    [MapperIgnoreTarget(nameof(PaymentSituationEntity.Callbacks))]
     public static partial PaymentSituationEntity ToEntity(this PaymentSituationCreationDto dto, Guid partnerId);
 
     public static partial IQueryable<PaymentAttemptDetailsDto> ToDetailedDto(this IQueryable<PaymentAttemptEntity> situations);
@@ -89,9 +94,9 @@ public static partial class ModelMapperExtensions
     [MapperIgnoreSource(nameof(PaymentSituationEntity.FinishedAt))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentOptions))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PartnerId))]
-    [MapperIgnoreSource(nameof(PaymentSituationEntity.Timeout))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.TimeoutAt))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.PaymentAttempts))]
     [MapperIgnoreSource(nameof(PaymentSituationEntity.Partner))]
-    [MapperIgnoreSource(nameof(PaymentSituationEntity.Callback))]
+    [MapperIgnoreSource(nameof(PaymentSituationEntity.Callbacks))]
     public static partial PaymentCallbackDto ToCallbackDto(this PaymentSituationEntity payment);
 }

@@ -8,4 +8,6 @@ public sealed class ApplicationOptions
 
     [Required(ErrorMessage = "ApplicationUrl must be provided!")]
     public string ApplicationUrl { get; set; } = string.Empty;
+
+    public int PaymentAttemptTimeout { get; set; } = 300;
 }

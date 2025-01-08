@@ -6,6 +6,7 @@ public record PaymentAttemptDetailsDto(
     PaymentAttemptStatus Status,
     string? PaymentError,
     DateTimeOffset CreatedAt,
+    DateTimeOffset TimeoutAt,
     DateTimeOffset? FinishedAt,
     Guid PaymentSituationId
 );

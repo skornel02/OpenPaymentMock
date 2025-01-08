@@ -32,13 +32,14 @@ public static class PaymentSituationStateMachine
             {
                 situation.FinishedAt = DateTimeOffset.Now;
 
-                situation.Callback = new()
+                situation.Callbacks ??= [];
+                situation.Callbacks.Add(new()
                 {
                     Id = NewId.NextGuid(),
                     CallbackUrl = situation.CallbackUrl,
                     PaymentSituationId = situation.Id,
                     Status = PaymentCallbackStatus.Pending,
-                };
+                });
             });
 
         stateMachine.Configure(PaymentSituationStatus.Failed)
@@ -46,13 +47,27 @@ public static class PaymentSituationStateMachine
             {
                 situation.FinishedAt = DateTimeOffset.Now;
 
-                situation.Callback = new()
+                situation.Callbacks ??= [];
+                situation.Callbacks.Add(new()
                 {
                     Id = NewId.NextGuid(),
                     CallbackUrl = situation.CallbackUrl,
                     PaymentSituationId = situation.Id,
                     Status = PaymentCallbackStatus.Pending,
-                };
+                });
+            });
+
+        stateMachine.Configure(PaymentSituationStatus.Refunded)
+            .OnEntry(() =>
+            {
+                situation.Callbacks ??= [];
+                situation.Callbacks.Add(new()
+                {
+                    Id = NewId.NextGuid(),
+                    CallbackUrl = situation.CallbackUrl,
+                    PaymentSituationId = situation.Id,
+                    Status = PaymentCallbackStatus.Pending,
+                });
             });
 
         stateMachine.OnUnhandledTrigger((_, _) =>

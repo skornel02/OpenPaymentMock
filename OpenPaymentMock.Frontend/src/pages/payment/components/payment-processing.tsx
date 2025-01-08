@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useInterval } from '@mantine/hooks';
+import { toast } from '@/hooks/use-toast';
 
 interface CardInformation {
   number: string;
@@ -16,8 +17,6 @@ interface CardInformation {
   name: string;
   focus: Focused;
 }
-
-const paymentTimeoutSeconds = 300;
 
 const emptyCard: CardInformation = {
   number: '',
@@ -45,11 +44,13 @@ export default function PaymentProcessing({
   completePaymentSuccessfully,
   completePaymentCancelled,
   completePaymentFailed,
+  reload,
 }: {
   currentStatus: SchemaCurrentPaymentAttemptDto;
   completePaymentSuccessfully: () => void;
   completePaymentCancelled: () => void;
   completePaymentFailed: (error: string) => void;
+  reload: () => void;
 }) {
   const readOnlyForm = useMemo(
     () =>
@@ -67,11 +68,21 @@ export default function PaymentProcessing({
 
   const updateTimer = useCallback( () => {
     const now = new Date().getTime();
-    const startedAt = new Date(currentStatus.createdAt).getTime();
-    const elapsed = now - startedAt;
+    const timeoutAt = new Date(currentStatus.timeoutAt).getTime();
 
-    setTimeRemaining(paymentTimeoutSeconds - elapsed / 1000);
-  }, [currentStatus]);
+    const nextTimeRemaining = Math.round((timeoutAt - now) / 1000);
+
+    setTimeRemaining(nextTimeRemaining);
+
+    if (nextTimeRemaining === 0) {
+      reload();
+      toast({
+        title: 'Payment timeout',
+        description: 'The payment attempt has timed out! Reloading the payment...',
+        variant: 'destructive',
+      })
+    }
+  }, [currentStatus, reload]);
 
   const timeoutTimer = useInterval(updateTimer, 1000);
 
@@ -82,7 +93,7 @@ export default function PaymentProcessing({
 
   return (
     <>
-      <div className="flex flex-col items-center  justify-start lg:grid lg:grid-flow-col lg:items-start min-h-screen bg-gray-100 dark:bg-gray-950 py-10 gap-4">
+      <div className="flex flex-col items-center  justify-start lg:grid lg:grid-flow-col lg:items-start lg:justify-center min-h-screen bg-gray-100 dark:bg-gray-950 py-10 gap-4">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
           <div className="flex flex-col items-center justify-center space-y-6 mb-4">
             <div className="bg-blue-300 rounded-full p-4">

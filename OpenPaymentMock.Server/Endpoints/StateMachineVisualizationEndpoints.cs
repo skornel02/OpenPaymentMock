@@ -12,6 +12,7 @@ public static class StateMachineVisualizationEndpoints
         var entity = new PaymentAttemptEntity()
         {
             CreatedAt = DateTimeOffset.UtcNow,
+            TimeoutAt = DateTimeOffset.UtcNow.AddMinutes(5),
             Id = Guid.Empty,
             PaymentSituationId = Guid.Empty,
             Status = PaymentAttemptStatus.NotAttempted
@@ -27,6 +28,7 @@ public static class StateMachineVisualizationEndpoints
         var entity = new PaymentSituationEntity()
         {
             CreatedAt = DateTimeOffset.UtcNow,
+            TimeoutAt = DateTimeOffset.UtcNow,
             Id = Guid.Empty,
             Status = PaymentSituationStatus.Created,
             Amount = 0,
@@ -34,7 +36,6 @@ public static class StateMachineVisualizationEndpoints
             Currency = string.Empty,
             PartnerId = Guid.Empty,
             RedirectUrl = string.Empty,
-            Timeout = TimeSpan.Zero,
         };
         var stateMachine = entity.GetStateMachine();
         return MermaidGraph.Format(stateMachine.GetInfo());

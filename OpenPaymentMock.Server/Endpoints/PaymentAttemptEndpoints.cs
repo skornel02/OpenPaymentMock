@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OpenPaymentMock.Communication.Payments;
 using OpenPaymentMock.Model.Entities;
 using OpenPaymentMock.Model.Enums;
 using OpenPaymentMock.Model.Extensions;
 using OpenPaymentMock.Server.Extensions;
+using OpenPaymentMock.Server.Options;
 using OpenPaymentMock.Server.Persistance;
 using OpenPaymentMock.Server.StateMachines;
 
@@ -24,6 +26,7 @@ public static class PaymentAttemptEndpoints
         group.MapGet("/current-attempt", async Task<Results<Ok<CurrentPaymentAttemptDto>, ProblemHttpResult>> (
             Guid paymentId,
             ApplicationDbContext context,
+            IOptions<ApplicationOptions> applicationOptions,
             CancellationToken cancellationToken) =>
         {
             using var _ = await PaymentAttemptLocker.LockAsync(paymentId);
@@ -49,11 +52,19 @@ public static class PaymentAttemptEndpoints
             if (!paymentSituation.Status.IsFinalized()
                 && (currentAttempt is null || currentAttempt.Status.IsFinalized()))
             {
+                var timeout = DateTimeOffset.UtcNow.AddSeconds(applicationOptions.Value.PaymentAttemptTimeout);
+
+                if (timeout > paymentSituation.TimeoutAt)
+                {
+                    timeout = paymentSituation.TimeoutAt;
+                }
+
                 currentAttempt = new PaymentAttemptEntity
                 {
                     Id = Guid.NewGuid(),
                     PaymentSituationId = paymentId,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    TimeoutAt = timeout,
                     Status = PaymentAttemptStatus.NotAttempted
                 };
 
@@ -159,9 +170,9 @@ public static class PaymentAttemptEndpoints
                 var stateMachine = attempt.GetStateMachine(out _);
                 stateMachine.Fire(PaymentAttemptTrigger.Success);
 
-                if (attempt.PaymentSituation.Callback is not null)
+                foreach (var newCallbacks in attempt.PaymentSituation.Callbacks)
                 {
-                    context.Entry(attempt.PaymentSituation.Callback).State = EntityState.Added;
+                    context.Entry(newCallbacks).State = EntityState.Added;
                 }
             }
             catch (InvalidOperationException)
@@ -195,9 +206,9 @@ public static class PaymentAttemptEndpoints
                 var stateMachine = attempt.GetStateMachine(out _);
                 stateMachine.Fire(PaymentAttemptTrigger.Cancel);
 
-                if (attempt.PaymentSituation.Callback is not null)
+                if (attempt.PaymentSituation.Callbacks is not null)
                 {
-                    context.Entry(attempt.PaymentSituation.Callback).State = EntityState.Added;
+                    context.Entry(attempt.PaymentSituation.Callbacks).State = EntityState.Added;
                 }
             }
             catch (InvalidOperationException)

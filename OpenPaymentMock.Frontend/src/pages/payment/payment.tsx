@@ -126,6 +126,7 @@ export default function PaymentPage() {
           completePaymentSuccessfully,
           completePaymentCancelled,
           completePaymentFailed,
+          reload: () => mutate(),
         }}
       />
     );

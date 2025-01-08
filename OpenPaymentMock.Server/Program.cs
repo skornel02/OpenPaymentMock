@@ -26,6 +26,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<ICallbackService, CallbackService>();
 
 builder.Services.AddHostedService<CallbackBackgroundService>();
+builder.Services.AddHostedService<PaymentAttemptTimeoutBackgroundService>();
+builder.Services.AddHostedService<PaymentSituationTimeoutBackgroundService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

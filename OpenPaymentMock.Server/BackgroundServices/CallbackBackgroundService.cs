@@ -21,7 +21,7 @@ public class CallbackBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("CallbackBackgroundService is starting.");
+        _logger.LogInformation("Callback service is starting.");
 
         await DoWork(stoppingToken);
     }
@@ -30,14 +30,12 @@ public class CallbackBackgroundService : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("CallbackBackgroundService is working.");
-
             using var scope = _serviceProvider.CreateScope();
 
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var paymentService = scope.ServiceProvider.GetRequiredService<ICallbackService>();
 
-            var now = DateTimeOffset.Now;
+            var now = DateTimeOffset.UtcNow;
             var timeout = now.AddMinutes(-1);
 
             var activeCallbacks = await context.Callbacks
@@ -56,9 +54,9 @@ public class CallbackBackgroundService : BackgroundService
                     {
                         callback.Status = PaymentCallbackStatus.Success;
                         callback.LatestResponse = null;
-                        callback.LatestResponseAt = DateTimeOffset.Now;
+                        callback.LatestResponseAt = DateTimeOffset.UtcNow;
                     }
-                    else 
+                    else
                     {
                         if (++callback.RetryCount >= 5)
                         {
@@ -66,13 +64,13 @@ public class CallbackBackgroundService : BackgroundService
                         }
 
                         callback.LatestResponse = error;
-                        callback.LatestResponseAt = DateTimeOffset.Now;
+                        callback.LatestResponseAt = DateTimeOffset.UtcNow;
                     }
-                } 
+                }
                 catch (Exception ex)
                 {
                     callback.LatestResponse = ex.Message;
-                    callback.LatestResponseAt = DateTimeOffset.Now;
+                    callback.LatestResponseAt = DateTimeOffset.UtcNow;
                 }
             }
 
@@ -84,7 +82,7 @@ public class CallbackBackgroundService : BackgroundService
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("CallbackBackgroundService is stopping.");
+        _logger.LogInformation("Callback service is stopping.");
 
         return base.StopAsync(cancellationToken);
     }

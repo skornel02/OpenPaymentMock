@@ -19,9 +19,9 @@ public class PaymentSituationEntity
 
     public string? Secret { get; set; }
 
-    public required TimeSpan Timeout { get; set; }
-
     public required DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public required DateTimeOffset TimeoutAt { get; set; }
 
     public DateTimeOffset? FinishedAt { get; set; }
 
@@ -33,5 +33,5 @@ public class PaymentSituationEntity
 
     public List<PaymentAttemptEntity> PaymentAttempts { get; set; } = null!;
 
-    public PaymentCallbackEntity? Callback { get; set; }
+    public List<PaymentCallbackEntity> Callbacks { get; set; } = null!;
 }

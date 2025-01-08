@@ -10,10 +10,9 @@ public record PaymentSituationDetailsDto(
     string Currency,
     string CallbackUrl,
     string RedirectUrl,
-    TimeSpan Timeout,
     DateTimeOffset CreatedAt,
+    DateTimeOffset TimeoutAt,
     DateTimeOffset? FinishedAt,
     PaymentOptions PaymentOptions,
-    Guid PartnerId,
-    PaymentCallbackStatus? CallbackStatus
+    Guid PartnerId
 );

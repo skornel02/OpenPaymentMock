@@ -822,6 +822,8 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
+            timeoutAt: string;
+            /** Format: date-time */
             finishedAt: string | null;
             /** Format: uuid */
             paymentSituationId: string;
@@ -883,14 +885,14 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
+            timeoutAt: string;
+            /** Format: date-time */
             finishedAt: string | null;
             /** Format: uuid */
             paymentSituationId: string;
         };
         /** @enum {string} */
         PaymentAttemptStatus: "NotAttempted" | "Started" | "Succeeded" | "TimedOut" | "BankVerificationRequired" | "PaymentError";
-        /** @enum {string} */
-        PaymentCallbackStatus: "Pending" | "Success" | "Failure";
         PaymentCreatedDto: {
             payment: components["schemas"]["PaymentSituationDetailsDto"];
             redirectUrl: string;
@@ -919,16 +921,15 @@ export interface components {
             currency: string;
             callbackUrl: string;
             redirectUrl: string;
-            /** @example 00:00:00 */
-            timeout: string;
             /** Format: date-time */
             createdAt: string;
+            /** Format: date-time */
+            timeoutAt: string;
             /** Format: date-time */
             finishedAt: string | null;
             paymentOptions: components["schemas"]["PaymentOptions"];
             /** Format: uuid */
             partnerId: string;
-            callbackStatus: components["schemas"]["PaymentCallbackStatus"];
         };
         PaymentSituationPublicDto: {
             /** Format: uuid */
@@ -971,7 +972,6 @@ export type SchemaPartnerCreationDto = components['schemas']['PartnerCreationDto
 export type SchemaPartnerShortDto = components['schemas']['PartnerShortDto'];
 export type SchemaPaymentAttemptDetailsDto = components['schemas']['PaymentAttemptDetailsDto'];
 export type SchemaPaymentAttemptStatus = components['schemas']['PaymentAttemptStatus'];
-export type SchemaPaymentCallbackStatus = components['schemas']['PaymentCallbackStatus'];
 export type SchemaPaymentCreatedDto = components['schemas']['PaymentCreatedDto'];
 export type SchemaPaymentOptions = components['schemas']['PaymentOptions'];
 export type SchemaPaymentSituationCreationDto = components['schemas']['PaymentSituationCreationDto'];

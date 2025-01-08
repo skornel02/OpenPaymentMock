@@ -8,9 +8,6 @@ public class PartnerAccessKeyEntityConfiguration : IEntityTypeConfiguration<Part
 {
     public void Configure(EntityTypeBuilder<PartnerAccessKeyEntity> builder)
     {
-        builder.Property(_ => _.Id)
-            .ValueGeneratedOnAdd();
-
         builder.HasIndex(_ => _.Key)
             .IsUnique();
 

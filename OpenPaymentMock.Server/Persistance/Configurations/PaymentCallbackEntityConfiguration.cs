@@ -8,12 +8,9 @@ public class PaymentCallbackEntityConfiguration : IEntityTypeConfiguration<Payme
 {
     public void Configure(EntityTypeBuilder<PaymentCallbackEntity> builder)
     {
-        builder.Property(_ => _.Id)
-            .ValueGeneratedOnAdd();
-
         builder.HasOne(_ => _.PaymentSituation)
-            .WithOne(_ => _.Callback)
-            .HasForeignKey<PaymentCallbackEntity>(_ => _.PaymentSituationId)
+            .WithMany(_ => _.Callbacks)
+            .HasForeignKey(_ => _.PaymentSituationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
